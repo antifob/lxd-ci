@@ -1,5 +1,8 @@
 #!/bin/sh
 ##
+## TODO Package names differ between distros (e.g. ubuntu vs kali).
+## Check if a build for kali runs on ubuntu and vice-versa.
+##
 set -eu
 
 apt-get -y install \
