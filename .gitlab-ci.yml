@@ -1,0 +1,19 @@
+.build_template_: &build_template
+  stage: build
+  script:
+    - set -eu
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get -y update
+    - apt-get -y upgrade
+    - cat "${CI_JOB_NAME}.deps" | xargs apt-get -y install
+    - sh build.sh "${CI_JOB_NAME##*-}" >"lxd-${CI_JOB_NAME}.tar.gz"
+  artifacts:
+    untracked: true
+
+4.3-buster:
+  <<: *build_template
+  image: debian:buster
+
+4.3-sid:
+  <<: *build_template
+  image: debian:sid

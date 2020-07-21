@@ -1,50 +1,65 @@
 #!/bin/sh
-##
-## TODO Package names differ between distros (e.g. ubuntu vs kali).
-## Check if a build for kali runs on ubuntu and vice-versa.
-##
+# usage: $0 version
 set -eu
 
-apt-get -y install \
-    acl \
-    autoconf \
-    dnsmasq-base \
-    git \
-    golang \
-    libacl1-dev \
-    libcap-dev \
-    liblxc1 \
-    lxc-dev \
-    libtool \
-    libuv1-dev \
-    make \
-    pkg-config \
-    rsync \
-    squashfs-tools \
-    tar \
-    tcl \
-    xz-utils \
-    ebtables
-    
-tmpdir=$(mktemp -d)
-export GOPATH="${tmpdir}"
+CURDIR=$(pwd)
 
-go get -d -v github.com/lxc/lxd/lxd || :
-cd "${GOPATH}/src/github.com/lxc/lxd"
+tmpdir=$(mktemp -d)
+cleanup() {
+	rm -rf "${tmpdir}"
+}
+trap cleanup EXIT INT QUIT TERM
+
+
+cd "${tmpdir}"
+wget "https://github.com/lxc/lxd/releases/download/lxd-${1}/lxd-${1}.tar.gz"
+
+gzip -cd "lxd-${1}.tar.gz" | tar -f- -x --no-same-owner
+
+
+cd "lxd-${1}"
+export GOPATH="${tmpdir}/lxd-${1}/_dist"
+
 make deps
-# TODO exports
+
+export CGO_CFLAGS="-I${GOPATH}/deps/sqlite/ -I${GOPATH}/deps/libco/ -I${GOPATH}/deps/raft/include/ -I${GOPATH}/deps/dqlite/include/"
+export CGO_LDFLAGS="-L${GOPATH}/deps/sqlite/.libs/ -L${GOPATH}/deps/libco/ -L${GOPATH}/deps/raft/.libs -L${GOPATH}/deps/dqlite/.libs/"
+export LD_LIBRARY_PATH="${GOPATH}/deps/sqlite/.libs/:${GOPATH}/deps/libco/:${GOPATH}/deps/raft/.libs/:${GOPATH}/deps/dqlite/.libs/"
+export CGO_LDFLAGS_ALLOW="-Wl,-wrap,pthread_create"
+
+cd "${GOPATH}/src/github.com/lxc/lxd"
 make
 
-mkdir -p "${tmpdir}/opt/lxd/bin"
-mkdir -p "${tmpdir}/opt/lxd/lib"
-mkdir -p "${tmpdir}/usr/local/bin"
 
-cp "${GOPATH}"/bin/* "${tmpdir}/opt/lxd/bin"
-cp "${GOPATH}"/deps/sqlite/.libs/libsqlite.so* "${tmpdir}/opt/lxd/lib"
-cp "${GOPATH}"/deps/libco/libco.so "${tmpdir}/opt/lxd/lib"
-cp "${GOPATH}"/deps/raft/.libs/libraft.so* "${tmpdir}/opt/lxd/lib"
-cp "${GOPATH}"/deps/sqlite/.libs/libsqlite3.so* "${tmpdir}/opt/lxd/lib"
-cp ./bin.lxc "${tmpdir}/usr/local/bin/lxc"
-cp ./bin/lxd "${tmpdir}/usr/local/bin/lxd"
+# Packaging
 
-(cd "${tmpdir}" && tar -f- -c opt usr) | gzip -9c >./lxd.tar.gz
+mkdir -p "${tmpdir}/rootfs/opt/lxd/bin"
+mkdir    "${tmpdir}/rootfs/opt/lxd/lib"
+mkdir -p "${tmpdir}/rootfs/usr/local/bin"
+
+cp "${GOPATH}/bin/"* "${tmpdir}/rootfs/opt/lxd/bin"
+cp "${GOPATH}/deps/dqlite/.libs/libdqlite.so"* "${tmpdir}/rootfs/opt/lxd/lib"
+cp "${GOPATH}/deps/raft/.libs/libraft.so"* "${tmpdir}/rootfs/opt/lxd/lib"
+cp "${GOPATH}/deps/sqlite/.libs/libsqlite3.so"* "${tmpdir}/rootfs/opt/lxd/lib"
+cp "${GOPATH}/deps/libco/libco.so"*  "${tmpdir}/rootfs/opt/lxd/lib"
+
+cat >"${tmpdir}/rootfs/usr/local/bin/lxc"<<__EOF__
+#!/bin/sh
+set -eu
+export LD_LIBRARY_PATH=/opt/lxd/lib
+exec /opt/lxd/bin/lxc "\${@}"
+__EOF__
+
+cat >"${tmpdir}/rootfs/usr/local/bin/lxd"<<__EOF__
+#!/bin/sh
+set -eu
+export PATH="/opt/lxd/bin:\${PATH}"
+export LD_LIBRARY_PATH=/opt/lxd/lib
+exec /opt/lxd/bin/lxd "\${@}"
+__EOF__
+
+chmod 0555 "${tmpdir}/rootfs/opt/lxd/bin"/*
+chmod 0444 "${tmpdir}/rootfs/opt/lxd/lib"/*
+chmod 0555 "${tmpdir}/rootfs/usr/local/bin"/*
+
+(cd "${tmpdir}/rootfs" && tar --owner=root -f- -c .) | gzip -9c
