@@ -1,8 +1,6 @@
 #!/bin/sh
-# usage: $0 version
+# usage: $0 version outfile
 set -eu
-
-CURDIR=$(pwd)
 
 tmpdir=$(mktemp -d)
 cleanup() {
@@ -62,4 +60,4 @@ chmod 0555 "${tmpdir}/rootfs/opt/lxd/bin"/*
 chmod 0444 "${tmpdir}/rootfs/opt/lxd/lib"/*
 chmod 0555 "${tmpdir}/rootfs/usr/local/bin"/*
 
-(cd "${tmpdir}/rootfs" && tar --owner=root -f- -c .) | gzip -9c
+(cd "${tmpdir}/rootfs" && tar --owner=root -f- -c .) | gzip -9c >"${2}"
