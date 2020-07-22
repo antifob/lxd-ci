@@ -6,7 +6,7 @@
     - apt-get -y update
     - apt-get -y upgrade
     - cat "${CI_JOB_NAME}.deps" | xargs apt-get -y install
-    - sh build.sh "${CI_JOB_NAME%%-*}" "lxd-${CI_JOB_NAME}.tar.gz"
+    - sh build.sh "${CI_JOB_NAME%%-*}" "${CI_PROJECT_DIR}/lxd-${CI_JOB_NAME}.tar.gz"
   artifacts:
     untracked: true
 
