@@ -38,8 +38,12 @@ mkdir -p "${tmpdir}/rootfs/usr/local/bin"
 cp "${GOPATH}/bin/"* "${tmpdir}/rootfs/opt/lxd/bin"
 cp "${GOPATH}/deps/dqlite/.libs/libdqlite.so"* "${tmpdir}/rootfs/opt/lxd/lib"
 cp "${GOPATH}/deps/raft/.libs/libraft.so"* "${tmpdir}/rootfs/opt/lxd/lib"
-cp "${GOPATH}/deps/sqlite/.libs/libsqlite3.so"* "${tmpdir}/rootfs/opt/lxd/lib"
-cp "${GOPATH}/deps/libco/libco.so"*  "${tmpdir}/rootfs/opt/lxd/lib"
+if [ -d "${GOPATH}/deps/sqlite" ]; then
+	cp "${GOPATH}/deps/sqlite/.libs/libsqlite3.so"* "${tmpdir}/rootfs/opt/lxd/lib"
+fi
+if [ -d "${GOPATH}/deps/libco" ]; then
+	cp "${GOPATH}/deps/libco/libco.so"*  "${tmpdir}/rootfs/opt/lxd/lib"
+fi
 
 cat >"${tmpdir}/rootfs/usr/local/bin/lxc"<<__EOF__
 #!/bin/sh
