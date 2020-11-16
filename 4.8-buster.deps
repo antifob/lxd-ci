@@ -3,7 +3,7 @@ autoconf
 dnsmasq-base
 ebtables
 git
-golang
+golang-1.13
 libacl1-dev
 libapparmor-dev
 libcap-dev
