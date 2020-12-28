@@ -62,6 +62,10 @@
   <<: *build_template
   image: debian:sid
 
+4.9-sid:
+  <<: *build_template
+  image: debian:sid
+
 4.3-kali:
   <<: *build_template
   image: kalilinux/kali-rolling
