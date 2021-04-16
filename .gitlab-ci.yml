@@ -45,6 +45,13 @@
     - export PATH="/usr/lib/go-1.13/bin:$PATH"
     - echo deb http://deb.debian.org/debian buster-backports main >/etc/apt/sources.list.d/backports.list
 
+4.13-buster:
+  <<: *build_template
+  image: debian:buster
+  before_script:
+    - export PATH="/usr/lib/go-1.13/bin:$PATH"
+    - echo deb http://deb.debian.org/debian buster-backports main >/etc/apt/sources.list.d/backports.list
+
 4.2-sid:
   <<: *build_template
   image: debian:sid
@@ -70,6 +77,10 @@
   image: debian:sid
 
 4.9-sid:
+  <<: *build_template
+  image: debian:sid
+
+4.13-sid:
   <<: *build_template
   image: debian:sid
 
