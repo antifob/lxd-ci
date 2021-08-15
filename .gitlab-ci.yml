@@ -116,13 +116,12 @@
     - export PATH="/usr/lib/go-1.15/bin:$PATH"
     - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
 
-# see: https://github.com/canonical/go-dqlite/issues/149
-#4.17-buster:
-#  <<: *build_template
-#  image: debian:buster
-#  before_script:
-#    - export PATH="/usr/lib/go-1.15/bin:$PATH"
-#    - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
+4.17-buster:
+  <<: *build_template
+  image: debian:buster
+  before_script:
+    - export PATH="/usr/lib/go-1.15/bin:$PATH"
+    - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
 
 4.17-sid:
   <<: *build_template
