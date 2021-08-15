@@ -8,6 +8,7 @@ libacl1-dev
 libapparmor-dev
 libcap-dev
 liblxc1
+liblz4-dev
 libseccomp-dev
 libsqlite3-dev
 libtool
