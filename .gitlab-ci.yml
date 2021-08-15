@@ -10,6 +10,15 @@
   artifacts:
     untracked: true
 
+
+4.17-bullseye:
+  <<: *build_template
+  image: debian:bullseye
+  before_script:
+    - export PATH="/usr/lib/go-1.13/bin:$PATH"
+    - echo deb http://deb.debian.org/debian "${CI_JOB_NAME%%-*}-backports" main >/etc/apt/sources.list.d/backports.list
+
+
 4.2-buster:
   <<: *build_template
   image: debian:buster
@@ -56,7 +65,7 @@
   <<: *build_template
   image: debian:buster
   before_script:
-    - export PATH="/usr/lib/go-1.13/bin:$PATH"
+    - export PATH="/usr/lib/go-1.15/bin:$PATH"
     - echo deb http://deb.debian.org/debian buster-backports main >/etc/apt/sources.list.d/backports.list
 
 4.2-sid:
