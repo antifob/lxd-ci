@@ -11,14 +11,7 @@
     untracked: true
 
 
-4.17-bullseye:
-  <<: *build_template
-  image: debian:bullseye
-  before_script:
-    - export PATH="/usr/lib/go-1.13/bin:$PATH"
-    - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
-
-
+#
 4.2-buster:
   <<: *build_template
   image: debian:buster
@@ -26,6 +19,12 @@
     - export PATH="/usr/lib/go-1.13/bin:$PATH"
     - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
 
+4.2-sid:
+  <<: *build_template
+  image: debian:sid
+
+
+#
 4.3-buster:
   <<: *build_template
   image: debian:buster
@@ -33,6 +32,16 @@
     - export PATH="/usr/lib/go-1.13/bin:$PATH"
     - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
 
+4.3-kali:
+  <<: *build_template
+  image: kalilinux/kali-rolling
+
+4.3-sid:
+  <<: *build_template
+  image: debian:sid
+
+
+#
 4.4-buster:
   <<: *build_template
   image: debian:buster
@@ -40,6 +49,28 @@
     - export PATH="/usr/lib/go-1.13/bin:$PATH"
     - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
 
+4.4-kali:
+  <<: *build_template
+  image: kalilinux/kali-rolling
+
+4.4-sid:
+  <<: *build_template
+  image: debian:sid
+
+
+#
+4.6-sid:
+  <<: *build_template
+  image: debian:sid
+
+
+#
+4.7-sid:
+  <<: *build_template
+  image: debian:sid
+
+
+#
 4.8-buster:
   <<: *build_template
   image: debian:buster
@@ -47,6 +78,12 @@
     - export PATH="/usr/lib/go-1.13/bin:$PATH"
     - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
 
+4.8-sid:
+  <<: *build_template
+  image: debian:sid
+
+
+#
 4.9-buster:
   <<: *build_template
   image: debian:buster
@@ -54,9 +91,27 @@
     - export PATH="/usr/lib/go-1.13/bin:$PATH"
     - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
 
+4.9-sid:
+  <<: *build_template
+  image: debian:sid
+
+
+#
 4.13-buster:
   <<: *build_template
   image: debian:buster
+  before_script:
+    - export PATH="/usr/lib/go-1.13/bin:$PATH"
+    - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
+
+4.13-sid:
+  <<: *build_template
+  image: debian:sid
+
+#
+4.17-bullseye:
+  <<: *build_template
+  image: debian:bullseye
   before_script:
     - export PATH="/usr/lib/go-1.13/bin:$PATH"
     - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
@@ -69,46 +124,6 @@
 #    - export PATH="/usr/lib/go-1.15/bin:$PATH"
 #    - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
 
-4.2-sid:
-  <<: *build_template
-  image: debian:sid
-
-4.3-sid:
-  <<: *build_template
-  image: debian:sid
-
-4.4-sid:
-  <<: *build_template
-  image: debian:sid
-
-4.6-sid:
-  <<: *build_template
-  image: debian:sid
-
-4.7-sid:
-  <<: *build_template
-  image: debian:sid
-
-4.8-sid:
-  <<: *build_template
-  image: debian:sid
-
-4.9-sid:
-  <<: *build_template
-  image: debian:sid
-
-4.13-sid:
-  <<: *build_template
-  image: debian:sid
-
 4.17-sid:
   <<: *build_template
   image: debian:sid
-
-4.3-kali:
-  <<: *build_template
-  image: kalilinux/kali-rolling
-
-4.4-kali:
-  <<: *build_template
-  image: kalilinux/kali-rolling
