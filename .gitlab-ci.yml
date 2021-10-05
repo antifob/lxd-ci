@@ -126,3 +126,7 @@
 4.17-sid:
   <<: *build_template
   image: debian:sid
+
+4.19-sid:
+  <<: *build_template
+  image: debian:sid
