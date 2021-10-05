@@ -25,7 +25,9 @@ export CGO_LDFLAGS="-L${GOPATH}/deps/sqlite/.libs/ -L${GOPATH}/deps/libco/ -L${G
 export LD_LIBRARY_PATH="${GOPATH}/deps/sqlite/.libs/:${GOPATH}/deps/libco/:${GOPATH}/deps/raft/.libs/:${GOPATH}/deps/dqlite/.libs/"
 export CGO_LDFLAGS_ALLOW="(-Wl,-wrap,pthread_create)|(-Wl,-z,now)"
 
-cd "${GOPATH}/src/github.com/lxc/lxd"
+if [ X4.19 != X"${1}" ]; then
+	cd "${GOPATH}/src/github.com/lxc/lxd"
+fi
 make
 
 
