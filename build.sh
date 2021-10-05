@@ -1,6 +1,6 @@
 #!/bin/sh
 # usage: $0 version outfile
-set -eu
+set -eux
 
 tmpdir=$(mktemp -d)
 cleanup() {
@@ -15,19 +15,29 @@ wget "https://github.com/lxc/lxd/releases/download/lxd-${1}/lxd-${1}.tar.gz"
 gzip -cd "lxd-${1}.tar.gz" | tar -f- -x --no-same-owner
 
 
-cd "lxd-${1}"
-export GOPATH="${tmpdir}/lxd-${1}/_dist"
+VERSMAJ="${1%.*}"
+VERSMIN="${1#*.}"
+if [ ${VERSMAJ} -eq 4 ] && [ ${VERSMIN} -lt 18 ]; then
+	export GOPATH="${tmpdir}/lxd-${1}/_dist"
+fi
 
+cd "lxd-${1}"
 make deps
 
-export CGO_CFLAGS="-I${GOPATH}/deps/sqlite/ -I${GOPATH}/deps/libco/ -I${GOPATH}/deps/raft/include/ -I${GOPATH}/deps/dqlite/include/"
-export CGO_LDFLAGS="-L${GOPATH}/deps/sqlite/.libs/ -L${GOPATH}/deps/libco/ -L${GOPATH}/deps/raft/.libs -L${GOPATH}/deps/dqlite/.libs/"
-export LD_LIBRARY_PATH="${GOPATH}/deps/sqlite/.libs/:${GOPATH}/deps/libco/:${GOPATH}/deps/raft/.libs/:${GOPATH}/deps/dqlite/.libs/"
+if [ ${VERSMAJ} -eq 4 ] && [ ${VERSMIN} -lt 18 ]; then
+	vendor="${GOPATH}"
+	export CGO_CFLAGS="-I${GOPATH}/deps/sqlite/ -I${GOPATH}/deps/libco/ -I${GOPATH}/deps/raft/include/ -I${GOPATH}/deps/dqlite/include/"
+	export CGO_LDFLAGS="-L${GOPATH}/deps/sqlite/.libs/ -L${GOPATH}/deps/libco/ -L${GOPATH}/deps/raft/.libs -L${GOPATH}/deps/dqlite/.libs/"
+	export LD_LIBRARY_PATH="${GOPATH}/deps/sqlite/.libs/:${GOPATH}/deps/libco/:${GOPATH}/deps/raft/.libs/:${GOPATH}/deps/dqlite/.libs/"
+	cd "${GOPATH}/src/github.com/lxc/lxd"
+else
+	vendor="${tmpdir}/lxd-${1}/vendor"
+	export CGO_CFLAGS="-I${vendor}/raft/include/ -I${vendor}/dqlite/include/"
+	export CGO_LDFLAGS="-L${vendor}/raft/.libs -L${vendor}/dqlite/.libs/"
+	export LD_LIBRARY_PATH="${vendor}/raft/.libs/:${vendor}/dqlite/.libs/"
+fi
 export CGO_LDFLAGS_ALLOW="(-Wl,-wrap,pthread_create)|(-Wl,-z,now)"
 
-if [ X4.19 != X"${1}" ]; then
-	cd "${GOPATH}/src/github.com/lxc/lxd"
-fi
 make
 
 
@@ -37,14 +47,14 @@ mkdir -p "${tmpdir}/rootfs/opt/lxd/bin"
 mkdir    "${tmpdir}/rootfs/opt/lxd/lib"
 mkdir -p "${tmpdir}/rootfs/usr/local/bin"
 
-cp "${GOPATH}/bin/"* "${tmpdir}/rootfs/opt/lxd/bin"
-cp "${GOPATH}/deps/dqlite/.libs/libdqlite.so"* "${tmpdir}/rootfs/opt/lxd/lib"
-cp "${GOPATH}/deps/raft/.libs/libraft.so"* "${tmpdir}/rootfs/opt/lxd/lib"
-if [ -d "${GOPATH}/deps/sqlite" ]; then
-	cp "${GOPATH}/deps/sqlite/.libs/libsqlite3.so"* "${tmpdir}/rootfs/opt/lxd/lib"
+cp ~/go/bin/* "${tmpdir}/rootfs/opt/lxd/bin"
+cp "${vendor}/dqlite/.libs/libdqlite.so"* "${tmpdir}/rootfs/opt/lxd/lib"
+cp "${vendor}/raft/.libs/libraft.so"* "${tmpdir}/rootfs/opt/lxd/lib"
+if [ -d "${vendor}/sqlite" ]; then
+	cp "${vendor}/sqlite/.libs/libsqlite3.so"* "${tmpdir}/rootfs/opt/lxd/lib"
 fi
-if [ -d "${GOPATH}/deps/libco" ]; then
-	cp "${GOPATH}/deps/libco/libco.so"*  "${tmpdir}/rootfs/opt/lxd/lib"
+if [ -d "${vendor}/libco" ]; then
+	cp "${vendor}/libco/libco.so"*  "${tmpdir}/rootfs/opt/lxd/lib"
 fi
 
 cat >"${tmpdir}/rootfs/usr/local/bin/lxc"<<__EOF__
