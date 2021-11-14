@@ -48,7 +48,7 @@ mkdir -p "${tmpdir}/rootfs/opt/lxd/bin"
 mkdir    "${tmpdir}/rootfs/opt/lxd/lib"
 mkdir -p "${tmpdir}/rootfs/usr/local/bin"
 
-cp ~/go/bin/* "${tmpdir}/rootfs/opt/lxd/bin"
+cp "${GOPATH}/bin"/* "${tmpdir}/rootfs/opt/lxd/bin"
 cp "${vendor}/dqlite/.libs/libdqlite.so"* "${tmpdir}/rootfs/opt/lxd/lib"
 cp "${vendor}/raft/.libs/libraft.so"* "${tmpdir}/rootfs/opt/lxd/lib"
 if [ -d "${vendor}/sqlite" ]; then
