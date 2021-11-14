@@ -15,6 +15,7 @@ wget "https://github.com/lxc/lxd/releases/download/lxd-${1}/lxd-${1}.tar.gz"
 gzip -cd "lxd-${1}.tar.gz" | tar -f- -x --no-same-owner
 
 
+export GOPATH="${tmpdir}/lxd-${1}/_dist"
 VERSMAJ="${1%.*}"
 VERSMIN="${1#*.}"
 if [ ${VERSMAJ} -eq 4 ] && [ ${VERSMIN} -lt 18 ]; then
