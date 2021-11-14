@@ -19,12 +19,10 @@ gzip -cd "lxd-${1}.tar.gz" | tar -f- -x --no-same-owner
 cd "lxd-${1}"
 make deps
 
-export GOPATH="${tmpdir}/lxd-${1}/_dist"
-vendor="${GOPATH}"
-export CGO_CFLAGS="-I${GOPATH}/deps/sqlite/ -I${GOPATH}/deps/libco/ -I${GOPATH}/deps/raft/include/ -I${GOPATH}/deps/dqlite/include/"
-export CGO_LDFLAGS="-L${GOPATH}/deps/sqlite/.libs/ -L${GOPATH}/deps/libco/ -L${GOPATH}/deps/raft/.libs -L${GOPATH}/deps/dqlite/.libs/"
-export LD_LIBRARY_PATH="${GOPATH}/deps/sqlite/.libs/:${GOPATH}/deps/libco/:${GOPATH}/deps/raft/.libs/:${GOPATH}/deps/dqlite/.libs/"
-cd "${GOPATH}/src/github.com/lxc/lxd"
+vendor="${tmpdir}/lxd-${1}/vendor"
+export CGO_CFLAGS="-I${vendor}/raft/include/ -I${vendor}/dqlite/include/"
+export CGO_LDFLAGS="-L${vendor}/raft/.libs -L${vendor}/dqlite/.libs/"
+export LD_LIBRARY_PATH="${vendor}/raft/.libs/:${vendor}/dqlite/.libs/"
 export CGO_LDFLAGS_ALLOW="(-Wl,-wrap,pthread_create)|(-Wl,-z,now)"
 
 make
