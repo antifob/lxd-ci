@@ -37,12 +37,6 @@ mkdir -p "${tmpdir}/rootfs/usr/local/bin"
 cp ~/go/bin/* "${tmpdir}/rootfs/opt/lxd/bin"
 cp "${vendor}/dqlite/.libs/libdqlite.so"* "${tmpdir}/rootfs/opt/lxd/lib"
 cp "${vendor}/raft/.libs/libraft.so"* "${tmpdir}/rootfs/opt/lxd/lib"
-if [ -d "${vendor}/sqlite" ]; then
-	cp "${vendor}/sqlite/.libs/libsqlite3.so"* "${tmpdir}/rootfs/opt/lxd/lib"
-fi
-if [ -d "${vendor}/libco" ]; then
-	cp "${vendor}/libco/libco.so"*  "${tmpdir}/rootfs/opt/lxd/lib"
-fi
 
 cat >"${tmpdir}/rootfs/usr/local/bin/lxc"<<__EOF__
 #!/bin/sh

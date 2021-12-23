@@ -1,24 +1,31 @@
+variables:
+  GOLANG_VERSION: '1.17'
+  LXD_VERSION: '4.21'
+
+
 .build_template_: &build_template
   stage: build
   script:
-    - set -eu
+    - 'set -eu'
     - export DEBIAN_FRONTEND=noninteractive
     - apt-get -y update
     - apt-get -y upgrade
-    - cat "${CI_JOB_NAME}.deps" | xargs apt-get -y install
-    - sh build.sh "${CI_JOB_NAME%%-*}" "${CI_PROJECT_DIR}/lxd-${CI_JOB_NAME}.tar.gz"
+    - touch /tmp/deps
+    - sort -u "deps.txt" /tmp/deps | xargs apt-get -y install
+    - sh build.sh "${LXD_VERSION}" "${CI_PROJECT_DIR}/lxd-${CI_JOB_NAME}.tar.gz"
   artifacts:
     untracked: true
 
 
 #
-4.20-bullseye:
+bullseye:
   <<: *build_template
   image: debian:bullseye
   before_script:
-    - export PATH="/usr/lib/go-1.17/bin:$PATH"
+    - export PATH="/usr/lib/go-${GOLANG_VERSION}/bin:$PATH"
     - echo deb http://deb.debian.org/debian "${CI_JOB_NAME##*-}-backports" main >/etc/apt/sources.list.d/backports.list
+    - sed -e "s|^golang$|golang-${GOLANG_VERSION}|" deps.txt >/tmp/deps
 
-4.20-sid:
+sid:
   <<: *build_template
   image: debian:sid
