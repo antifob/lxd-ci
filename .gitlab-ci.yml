@@ -1,6 +1,6 @@
 variables:
-  GOLANG_VERSION: '1.17'
-  LXD_VERSION: '4.24'
+  GOLANG_VERSION: '1.18'
+  LXD_VERSION: '5.0.0'
 
 
 .build_template_: &build_template
