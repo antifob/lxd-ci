@@ -2,6 +2,8 @@
 # usage: $0 version outfile
 set -eux
 
+origdir=$(pwd)
+
 tmpdir=$(mktemp -d)
 cleanup() {
 	rm -rf "${tmpdir}"
@@ -30,31 +32,31 @@ make
 
 # Packaging
 
-mkdir -p "${tmpdir}/rootfs/opt/lxd/bin"
-mkdir    "${tmpdir}/rootfs/opt/lxd/lib"
-mkdir -p "${tmpdir}/rootfs/usr/local/bin"
+mkdir -p "${tmpdir}/rootfs/opt/lxd-${1}/bin"
+mkdir    "${tmpdir}/rootfs/opt/lxd-${1}/lib"
 
-cp ~/go/bin/* "${tmpdir}/rootfs/opt/lxd/bin"
-cp "${vendor}/dqlite/.libs/libdqlite.so"* "${tmpdir}/rootfs/opt/lxd/lib"
-cp "${vendor}/raft/.libs/libraft.so"* "${tmpdir}/rootfs/opt/lxd/lib"
+cp ~/go/bin/* "${tmpdir}/rootfs/opt/lxd-${1}/bin"
+cp "${vendor}/dqlite/.libs/libdqlite.so"* "${tmpdir}/rootfs/opt/lxd-${1}/lib"
+cp "${vendor}/raft/.libs/libraft.so"* "${tmpdir}/rootfs/opt/lxd-${1}/lib"
 
-cat >"${tmpdir}/rootfs/usr/local/bin/lxc"<<__EOF__
+cat >"${tmpdir}/rootfs/opt/lxd-${1}/bin/lxc.wrapper"<<__EOF__
 #!/bin/sh
 set -eu
-export LD_LIBRARY_PATH=/opt/lxd/lib
-exec /opt/lxd/bin/lxc "\${@}"
+export LD_LIBRARY_PATH=/opt/lxd-${1}/lib
+exec /opt/lxd-${1}/bin/lxc "\${@}"
 __EOF__
 
-cat >"${tmpdir}/rootfs/usr/local/bin/lxd"<<__EOF__
+cat >"${tmpdir}/rootfs/opt/lxd-${1}/bin/lxd.wrapper"<<__EOF__
 #!/bin/sh
 set -eu
-export PATH="/opt/lxd/bin:\${PATH}"
-export LD_LIBRARY_PATH=/opt/lxd/lib
-exec /opt/lxd/bin/lxd "\${@}"
+export PATH="/opt/lxd-${1}/bin:\${PATH}"
+export LD_LIBRARY_PATH=/opt/lxd-${1}/lib
+exec /opt/lxd-${1}/bin/lxd "\${@}"
 __EOF__
 
-chmod 0555 "${tmpdir}/rootfs/opt/lxd/bin"/*
-chmod 0444 "${tmpdir}/rootfs/opt/lxd/lib"/*
-chmod 0555 "${tmpdir}/rootfs/usr/local/bin"/*
+chmod 0555 "${tmpdir}/rootfs/opt/lxd-${1}/bin"/*
+chmod 0444 "${tmpdir}/rootfs/opt/lxd-${1}/lib"/*
 
-(cd "${tmpdir}/rootfs" && tar --owner=root -f- -c .) | gzip -9c >"${2}"
+cp -r "${origdir}/etc" "${tmpdir}/rootfs/opt/lxd-${1}"
+
+(cd "${tmpdir}/rootfs" && tar --owner=root --group=root -f- -c .) | gzip -9c >"${2}"

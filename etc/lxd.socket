@@ -1,0 +1,13 @@
+# https://github.com/lxc/lxd-pkg-ubuntu/blob/8dc4a41e780000c323e119ba14f4463b4c222c8e/debian/lxd.socket
+[Unit]
+Description=LXD - unix socket
+Documentation=man:lxd(1)
+
+[Socket]
+ListenStream=/var/lib/lxd/unix.socket
+SocketGroup=lxd
+SocketMode=0660
+Service=lxd.service
+
+[Install]
+WantedBy=sockets.target

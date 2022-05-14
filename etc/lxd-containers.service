@@ -1,0 +1,21 @@
+# adapted from
+# https://github.com/lxc/lxd-pkg-ubuntu/blob/8dc4a41e780000c323e119ba14f4463b4c222c8e/debian/lxd.lxd-containers.service
+
+
+[Unit]
+Description=LXD - container startup/shutdown
+Documentation=man:lxd(1)
+After=lxd.socket lxd.service
+Requires=lxd.socket
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/lxd activateifneeded
+# shutdown is now part of the lxd binary
+ExecStop=/usr/local/bin/lxd shutdown
+TimeoutStartSec=30s
+TimeoutStopSec=90s
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

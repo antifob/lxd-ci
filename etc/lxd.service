@@ -1,0 +1,26 @@
+# adapted from
+# https://github.com/lxc/lxd-pkg-ubuntu/blob/8dc4a41e780000c323e119ba14f4463b4c222c8e/debian/lxd.service
+#
+# lxd-bridge.service isn't provided
+#
+
+[Unit]
+Description=LXD - main daemon
+After=network-online.target openvswitch-switch.service lxcfs.service lxd.socket
+Requires=network-online.target lxcfs.service lxd.socket
+Documentation=man:lxd(1)
+
+[Service]
+EnvironmentFile=-/etc/environment
+ExecStart=/usr/local/bin/lxd --group lxd --logfile=/var/log/lxd/lxd.log
+ExecStartPost=/usr/local/bin/lxd waitready --timeout=600
+KillMode=process
+TimeoutStartSec=600
+TimeoutStopSec=40
+Restart=on-failure
+LimitNOFILE=1048576
+LimitNPROC=infinity
+TasksMax=infinity
+
+[Install]
+Also=lxd-containers.service lxd.socket

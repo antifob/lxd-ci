@@ -1,0 +1,12 @@
+# https://github.com/lxc/lxd-pkg-ubuntu/blob/8dc4a41e780000c323e119ba14f4463b4c222c8e/debian/lxd.logrotate
+# https://github.com/lxc/lxd-pkg-snap/blob/750f8d377624d004235f53c7e7aa988dba1031a2/snapcraft/etc/logrotate.conf
+
+/var/log/lxd/lxd.log {
+       copytruncate
+       rotate 7
+       delaycompress
+       compress
+       notifempty
+       missingok
+       minage 1
+}
