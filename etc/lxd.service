@@ -12,6 +12,8 @@ Documentation=man:lxd(1)
 
 [Service]
 EnvironmentFile=-/etc/environment
+# part of liblxc-common, a transitory dependency of lxc
+ExecStartPre=/usr/libexec/lxc/lxc-apparmor-load
 ExecStart=/usr/local/bin/lxd --group lxd --logfile=/var/log/lxd/lxd.log
 ExecStartPost=/usr/local/bin/lxd waitready --timeout=600
 KillMode=process
