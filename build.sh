@@ -22,7 +22,7 @@ cd lxd
 
 make deps
 
-vendor=/root/go/deps
+vendor="${HOME}/go/deps"
 export CGO_CFLAGS="-I${vendor}/raft/include/ -I${vendor}/dqlite/include/"
 export CGO_LDFLAGS="-L${vendor}/raft/.libs -L${vendor}/dqlite/.libs/"
 export LD_LIBRARY_PATH="${vendor}/raft/.libs/:${vendor}/dqlite/.libs/"
