@@ -30,7 +30,7 @@ dist=$(lsb_release -cs)
 https://github.com/antifob/lxd-ci/releases/download/${vers}/lxd-${vers}-${dist}.tar.gz
 ```
 
-### GitLab
+### GitLab (no longer maintained)
 
 To download a build from GitLab:
 
@@ -82,8 +82,9 @@ build dependencies and steps are pretty stable. If the job fails, check
 if a newer Go version is required and update the jobs accordingly.
 
 ```
-# a new version of LXD was released
-git tag $version
+# a new version of LXD was released (tag: lxd-a.b)
+# build a specific branch or commit (tag: master)
+git tag $ref
 git push --tags
 ```
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-# usage: $0 version outfile
+# usage: $0 gitref outfile
 set -eux
 
 origdir=$(pwd)
@@ -10,18 +10,19 @@ cleanup() {
 }
 trap cleanup EXIT INT QUIT TERM
 
+B="${1}"
+if echo "${B}" | grep -Eq '^[0-9]+[.]'; then
+	B="lxd-${B}"
+	printf '[+] Assuming gitref is a release tag (%s -> %s)\n' "${1}" "${B}"
+fi
 
 cd "${tmpdir}"
-wget "https://github.com/lxc/lxd/releases/download/lxd-${1}/lxd-${1}.tar.gz"
+git clone --depth=1 -b "${B}" https://github.com/lxc/lxd
+cd lxd
 
-gzip -cd "lxd-${1}.tar.gz" | tar -f- -x --no-same-owner
-
-
-
-cd "lxd-${1}"
 make deps
 
-vendor="${tmpdir}/lxd-${1}/vendor"
+vendor=/root/go/deps
 export CGO_CFLAGS="-I${vendor}/raft/include/ -I${vendor}/dqlite/include/"
 export CGO_LDFLAGS="-L${vendor}/raft/.libs -L${vendor}/dqlite/.libs/"
 export LD_LIBRARY_PATH="${vendor}/raft/.libs/:${vendor}/dqlite/.libs/"
