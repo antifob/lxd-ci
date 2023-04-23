@@ -7,6 +7,9 @@ permissions:
 on:
   push:
     tags:
+      - master
+      - '[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   build:
