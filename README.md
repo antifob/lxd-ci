@@ -4,6 +4,7 @@ This repository serves to build tarballs of LXD using GitHub Actions
 and GitLab's CI. Current targets are:
 
 - Debian bullseye
+- Debian bookworm
 - Debian sid
 
 Feel free to share a patch for other distributions. :)

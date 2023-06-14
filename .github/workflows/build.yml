@@ -17,6 +17,7 @@ jobs:
       matrix:
         distro:
           - debian:bullseye
+          - debian:bookworm
           - debian:sid
     container: ${{ matrix.distro }}
     runs-on: ubuntu-latest
