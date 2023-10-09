@@ -1,3 +1,5 @@
+**NO LONGER MAINTAINED IN FAVOR OF https://github.com/zabbly/incus**
+
 # lxd builds
 
 This repository serves to build tarballs of LXD using GitHub Actions
